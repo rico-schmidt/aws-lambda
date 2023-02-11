@@ -38,3 +38,9 @@ variable "runtime" {
   description = "Lambda runtime"
   default     = "python3.9"
 }
+
+variable "services" {
+  type = list(string)
+  description = "Name of AWS Services like lambda, ec2"
+  default = []
+}

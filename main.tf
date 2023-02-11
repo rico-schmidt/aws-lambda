@@ -10,6 +10,12 @@ module "alb" {
 }
 */
 
+module "kms" {
+  for_each = var.services
+  source = "./modules/kms"
+  name = each.key
+}
+
 module "api" {
   source             = "./modules/lambda"
   name               = var.api_name

@@ -22,58 +22,11 @@ data "aws_iam_policy_document" "key" {
     sid    = "Allow key usage"
     effect = "Allow"
     actions = [
-      "kms:Encrypt",
-      "kms:Decrypt",
-      "kms:ReEncrypt*",
-      "kms:GenerateDataKey*",
-      "kms:DescribeKey"
+      "kms:Decrypt"
     ]
-    resources = ["*"]
-
-    principals {
-      type = "AWS"
-      identifiers = [
-        aws_iam_role.main.arn
-      ]
-    }
-  }
-
-  statement {
-    sid    = "Enable IAM User Permissions"
-    effect = "Allow"
-    actions = [
-      "kms:*"
+    resources = [
+      var.lambda_kms_key
     ]
-    resources = ["*"]
-
-    principals {
-      type = "AWS"
-      identifiers = [
-        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
-      ]
-    }
-  }
-
-  statement {
-    sid    = "Allow attachment of lambda functions"
-    effect = "Allow"
-    actions = [
-      "kms:CreateGrant",
-      "kms:ListGrants",
-      "kms:RevokeGrant"
-    ]
-    resources = ["*"]
-
-    principals {
-      type = "AWS"
-      identifiers = [
-        aws_iam_role.main.arn
-      ]
-    }
-    condition {
-      test     = "Bool"
-      variable = "kms:GrantIsForAWSResource"
-      values   = ["true"]
-    }
   }
 }
+
