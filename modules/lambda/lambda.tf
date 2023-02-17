@@ -6,17 +6,17 @@ resource "aws_lambda_function" "main" {
   runtime          = var.runtime
   handler          = var.handler
   timeout          = var.timeout
-  kms_key_arn      = aws_kms_key.main.arn
+  kms_key_arn      = var.lambda_kms_key
 
   s3_bucket         = data.aws_s3_bucket.main.id
-  s3_key            = aws_s3_bucket_object.main.key
-  s3_object_version = aws_s3_bucket_object.main.version_id
+  s3_key            = aws_s3_object.main.key
+  s3_object_version = aws_s3_object.main.version_id
   memory_size       = var.memory_size
   layers            = var.lambda_layers
 
   vpc_config {
     subnet_ids         = var.subnet_ids
-    security_group_ids = var.security_group_ids
+    security_group_ids = concat([aws_security_group.main.id], var.security_group_ids)
   }
   package_type = var.package_type
 
@@ -48,3 +48,13 @@ resource "aws_lambda_provisioned_concurrency_config" "main" {
   qualifier                         = aws_lambda_alias.example.name
 }
 */
+
+resource "aws_cloudwatch_log_group" "main" {
+  name              = "/aws/lambda/${aws_lambda_function.main.function_name}"
+  retention_in_days = var.retention_in_days
+  kms_key_id        = var.cloudwatch_kms_key
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+

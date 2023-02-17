@@ -12,8 +12,8 @@ module "alb" {
 
 module "kms" {
   for_each = var.services
-  source = "./modules/kms"
-  name = each.key
+  source   = "./modules/kms"
+  name     = each.key
 }
 
 module "api" {
@@ -23,10 +23,12 @@ module "api" {
   subnet_ids         = var.subnet_ids
   security_group_ids = var.security_group_ids
   env_vars = {
-    stage = "dev"
+    stage = var.stage
   }
-  vpc_id = var.vpc_id
-  bucket = module.s3.bucket_id
+  vpc_id             = var.vpc_id
+  bucket             = module.s3.bucket_id
+  lambda_kms_key     = module.kms["lambda"].kms_key_arn
+  cloudwatch_kms_key = module.kms["cloudwatch"].kms_key_arn
   #aws_alb_arn = module.alb.aws_alb_arn
   #aws_alb_listener_arn = module.alb.aws_alb_listener_arn
   #alb_security_group_id = module.alb.security_group_id

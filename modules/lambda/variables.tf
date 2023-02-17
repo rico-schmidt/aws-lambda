@@ -72,30 +72,6 @@ variable "security_group_ids" {
   default     = null
 }
 
-variable "rotation_enabled" {
-  type        = bool
-  description = "Boolean to enable automatic key rotation"
-  default     = true
-}
-
-variable "key_tags" {
-  type        = map(string)
-  description = "KMS Key tags"
-  default     = null
-}
-
-variable "key_spec" {
-  type        = string
-  default     = "SYMMETRIC_DEFAULT"
-  description = "Key algorithm"
-}
-
-variable "deletion_window_in_days" {
-  type        = number
-  default     = 7
-  description = "Deletion period for KMS key"
-}
-
 variable "package_type" {
   type        = string
   default     = "Zip"
@@ -138,7 +114,25 @@ variable "bucket" {
 }
 
 variable "lambda_layers" {
-  type        = list(string)
+  type        = set(string)
   default     = []
   description = "IDs of lambda layers"
+}
+
+variable "lambda_kms_key" {
+  type        = string
+  description = "Lambda kms key ARN"
+  default     = ""
+}
+
+variable "retention_in_days" {
+  type        = number
+  default     = 7
+  description = "Log retention in cloudwatch"
+}
+
+variable "cloudwatch_kms_key" {
+  type        = string
+  default     = null
+  description = "KMS key to encrypt cloudwatch log group"
 }

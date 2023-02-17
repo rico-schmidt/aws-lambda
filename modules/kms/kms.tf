@@ -4,7 +4,7 @@ resource "aws_kms_key" "main" {
   customer_master_key_spec = var.key_spec
   is_enabled               = true
   enable_key_rotation      = var.rotation_enabled
-  policy                   = data.aws_iam_policy_document.key.json
+  policy                   = data.aws_iam_policy_document.main.json
   deletion_window_in_days  = var.deletion_window_in_days
   tags                     = var.key_tags
 }

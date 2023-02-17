@@ -40,7 +40,7 @@ variable "runtime" {
 }
 
 variable "services" {
-  type = list(string)
+  type        = set(string)
   description = "Name of AWS Services like lambda, ec2"
-  default = []
+  default     = []
 }
