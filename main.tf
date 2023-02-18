@@ -16,7 +16,7 @@ module "kms" {
   name     = each.key
 }
 
-module "api" {
+module "api_lambda" {
   source             = "./modules/lambda"
   name               = var.api_name
   source_dir         = "${path.root}/code/api"
@@ -29,6 +29,7 @@ module "api" {
   bucket             = module.s3.bucket_id
   lambda_kms_key     = module.kms["lambda"].kms_key_arn
   cloudwatch_kms_key = module.kms["cloudwatch"].kms_key_arn
+  lambda_layers      = [module.fastapi_layer.arn]
   #aws_alb_arn = module.alb.aws_alb_arn
   #aws_alb_listener_arn = module.alb.aws_alb_listener_arn
   #alb_security_group_id = module.alb.security_group_id

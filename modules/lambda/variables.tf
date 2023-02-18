@@ -50,10 +50,10 @@ variable "source_dir" {
   description = "Relative path to source code directory for lambda function"
 }
 
-variable "concurrency" {
+variable "provisioned_concurrency" {
   type        = number
-  default     = 1
-  description = "Concurrency for lambda container executions"
+  default     = null
+  description = "Provisioned concurrency for lambda warm start executions"
 }
 
 variable "vpc_id" {

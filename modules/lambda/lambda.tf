@@ -27,11 +27,6 @@ resource "aws_lambda_function" "main" {
   #ephemeral_storage {
   #  size = var.lambda_storage_size # Min 512 MB and the Max 10240 MB
   #}
-
-  #lifecycle {
-  #  ignore_changes = [source_code_hash]
-  #}
-
 }
 
 /*
@@ -41,20 +36,17 @@ resource "aws_lambda_alias" "lambda" {
   function_name    = aws_lambda_function.main.function_name
   function_version = "$LATEST"
 }
+*/
 
 resource "aws_lambda_provisioned_concurrency_config" "main" {
-  function_name                     = aws_lambda_alias.example.function_name
-  provisioned_concurrent_executions = var.concurrency
+  count                             = var.provisioned_concurrency == null ? 0 : 1
+  function_name                     = aws_lambda_function.main.function_name
+  provisioned_concurrent_executions = var.provisioned_concurrency
   qualifier                         = aws_lambda_alias.example.name
 }
-*/
 
 resource "aws_cloudwatch_log_group" "main" {
   name              = "/aws/lambda/${aws_lambda_function.main.function_name}"
   retention_in_days = var.retention_in_days
   kms_key_id        = var.cloudwatch_kms_key
-  lifecycle {
-    prevent_destroy = true
-  }
 }
-
