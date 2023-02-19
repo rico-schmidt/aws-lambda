@@ -1,10 +1,10 @@
 locals {
-  target_path       = "${abspath(path.root)}/.python/${var.name}"
+  target_path       = "${abspath(path.root)}/.python/${var.name}" #"./python/lib/python3.9/site-packages"
   requirements_file = "${abspath(path.root)}/code/${var.requirements_file}"
-  python_version    = trim_prefix(var.runtime, "python")
+  python_version    = trimprefix(var.runtime, "python")
   platform = {
     "arm64" = "manylinux2014_aarch64"
-  "x86" = "manylinux2014_x86_64" }[var.platform]
+    "x86_64" = "manylinux2014_x86_64" }[var.architecture]
 }
 
 resource "null_resource" "build" {
@@ -39,6 +39,6 @@ data "aws_s3_bucket" "main" {
 #upload zip to S3
 resource "aws_s3_object" "main" {
   bucket = data.aws_s3_bucket.main.id
-  key    = "/lambda_layer/${var.name}/source"
-  source = data.archive_file.main.id
+  key    = "lambda_layer/${var.name}.zip"
+  source = data.archive_file.main.output_path
 }

@@ -11,6 +11,6 @@ resource "aws_kms_key" "main" {
 
 # Add an alias to the key
 resource "aws_kms_alias" "main" {
-  name          = "alias/${var.name}_lambda"
+  name          = "alias/${var.name}"
   target_key_id = aws_kms_key.main.key_id
 }

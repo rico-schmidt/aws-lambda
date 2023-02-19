@@ -1,61 +1,56 @@
+data "aws_iam_policy_document" "main" {
+  statement {
+    actions    = ["sts:AssumeRole"]
+    effect     = "Allow"
+    principals {
+      type        = "Service"
+      identifiers = ["lambda.amazonaws.com"]
+    }
+  }
+}
+
 resource "aws_iam_role" "main" {
   name               = var.name
-  assume_role_policy = <<EOF
-  {
-    "Version": "2012-10-17",
-    "Statement": [
-      {
-        "Action": "sts:AssumeRole",
-        "Principal": {
-          "Service": "lambda.amazonaws.com"
-        },
-        "Effect": "Allow",
-        "Sid": "Lambda execution role"
-      }
+  assume_role_policy = data.aws_iam_policy_document.main.json
+}
+
+data "aws_iam_policy_document" "kms" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "kms:Decrypt",
+    ]
+    resources = [
+      var.lambda_kms_key,
     ]
   }
-  EOF
 }
 
 resource "aws_iam_policy" "kms" {
-  name        = data.aws_iam_policy_document.key.policy_id
+  name        = "${var.name}KmsPolicy"
   path        = "/"
   description = "KMS policy for Lambda ${aws_lambda_function.main.function_name}"
-  policy      = <<EOF
-  {
-    "Version": "2012-10-17",
-    "Statement": [
-      {
-        "Action": "kms:Decrypt",
-        "Resource": "${var.lambda_kms_key}",
-        "Effect": "Allow",
-        "Sid": "Allow key usage"
-      }
+  policy      = data.aws_iam_policy_document.kms.json
+}
+
+data "aws_iam_policy_document" "cloudwatch" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "logs:CreateLogStream",
+      "logs:PutLogEvents",
+    ]
+    resources = [
+      aws_cloudwatch_log_group.main.arn,
     ]
   }
-  EOF
 }
 
 resource "aws_iam_policy" "cloudwatch" {
-  name        = data.aws_iam_policy_document.key.policy_id
+  name        = "${var.name}CloudwatchPolicy"
   path        = "/"
   description = "Cloudwatch policy for Lambda ${aws_lambda_function.main.function_name}"
-  policy      = <<EOF
-  {
-    "Version": "2012-10-17",
-    "Statement": [
-      {
-        "Action": [
-          "logs:CreateLogStream",
-          "logs:PutLogEvents"
-        ],
-        "Resource": "${aws_cloudwatch_log_group.main.arn}",
-        "Effect": "Allow",
-        "Sid": "Cloudwatch permissions"
-      }
-    ]
-  }
-  EOF
+  policy      = data.aws_iam_policy_document.cloudwatch.json
 }
 
 resource "aws_iam_role_policy_attachment" "kms" {

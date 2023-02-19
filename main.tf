@@ -1,3 +1,14 @@
+data "aws_subnets" "main" {
+  filter {
+    name   = "vpc-id"
+    values = [var.vpc_id]
+  }
+
+  tags = {
+    Tier = "private"
+  }
+}
+
 module "s3" {
   source = "./modules/s3_bucket"
   name   = "${var.project}-${var.stage}-s3"
@@ -20,7 +31,7 @@ module "api_lambda" {
   source             = "./modules/lambda"
   name               = var.api_name
   source_dir         = "${path.root}/code/api"
-  subnet_ids         = var.subnet_ids
+  subnet_ids         = [] #data.aws_subnets.main.ids
   security_group_ids = var.security_group_ids
   env_vars = {
     stage = var.stage

@@ -11,6 +11,6 @@ data "aws_s3_bucket" "main" {
 #upload zip to S3
 resource "aws_s3_object" "main" {
   bucket = data.aws_s3_bucket.main.id
-  key    = "/lambda/${var.name}/source"
-  source = data.archive_file.main.id
+  key    = "lambda/${var.name}.zip"
+  source = data.archive_file.main.output_path
 }

@@ -21,10 +21,14 @@ variable "timeout" {
   description = "Lambda function timeout in seconds"
 }
 
-variable "architectures" {
-  type        = list(string)
-  default     = ["x86_64"]
-  description = "Architecture for lambda function"
+variable "architecture" {
+  type        = string
+  default     = "arm64"
+  description = "Architecture platform"
+  validation {
+    condition     = contains(["arm64", "x86_64"], var.architecture)
+    error_message = "Platform must be in [arm64, x86_64]."
+  }
 }
 
 variable "memory_size" {
@@ -50,6 +54,12 @@ variable "source_dir" {
   description = "Relative path to source code directory for lambda function"
 }
 
+variable "reserved_concurrency" {
+  type        = number
+  default     = -1
+  description = "Number of reserved concurrency executions. -1 = no limits. 0 = no execution."
+}
+
 variable "provisioned_concurrency" {
   type        = number
   default     = null
@@ -64,12 +74,13 @@ variable "vpc_id" {
 variable "subnet_ids" {
   type        = list(string)
   description = "subnet IDs for lambda function"
+  default     = []
 }
 
 variable "security_group_ids" {
   type        = list(string)
   description = "List of security groups associated with lambda function"
-  default     = null
+  default     = []
 }
 
 variable "package_type" {

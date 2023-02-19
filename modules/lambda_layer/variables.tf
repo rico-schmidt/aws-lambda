@@ -9,13 +9,13 @@ variable "runtime" {
   description = "Lambda layer compatible runtimes"
 }
 
-variable "platform" {
+variable "architecture" {
   type        = string
   default     = "arm64"
   description = "Architecture platform"
   validation {
-    condition     = contains(["arm64", "x86"], var.platform)
-    error_message = "Platform must be in: arm64, x86"
+    condition     = contains(["arm64", "x86_64"], var.architecture)
+    error_message = "Platform must be in [arm64, x86_64]."
   }
 }
 
